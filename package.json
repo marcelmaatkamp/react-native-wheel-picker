@@ -1,6 +1,6 @@
 {
-  "name": "@quidone/react-native-wheel-picker",
-  "version": "1.4.0",
+  "name": "@marcelmaatkamp/react-native-wheel-picker",
+  "version": "1.4.1",
   "description": "Picker is a UI component for selecting an item from a list of options.",
   "main": "dest/commonjs/index",
   "module": "dest/module/index",
@@ -61,7 +61,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17 || ^18",
+    "react": "^16.8 || ^17 || ^18 || ^19",
     "react-native": ">=0.71.6"
   },
   "dependencies": {
