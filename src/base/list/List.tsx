@@ -20,13 +20,10 @@ import {
   ViewStyle,
 } from 'react-native';
 import {useInit} from '@rozhkov/react-useful-hooks';
-import {withScrollEndEvent} from '@utils/scrolling';
-
+import {withScrollEndEvent} from '../../utils/scrolling';
 const ExtendedAnimatedScrollView = withScrollEndEvent(Animated.ScrollView);
-
 const OFFSET_X = 0;
 const getOffsetY = (index: number, itemHeight: number) => index * itemHeight;
-
 export type ListProps<ItemT extends PickerItem<any>> = {
   data: ReadonlyArray<ItemT>;
   keyExtractor: KeyExtractor<ItemT>;
@@ -42,7 +39,6 @@ export type ListProps<ItemT extends PickerItem<any>> = {
   onScrollEnd: () => void;
   contentContainerStyle: StyleProp<ViewStyle> | undefined;
 };
-
 const List = <ItemT extends PickerItem<any>>(
   {
     initialIndex,
@@ -80,19 +76,28 @@ const List = <ItemT extends PickerItem<any>>(
     x: OFFSET_X,
     y: getOffsetY(initialIndex, itemHeight),
   }));
-
   const snapToOffsets = useMemo(
     () => data.map((_, i) => i * itemHeight),
     [data, itemHeight],
   );
   const onScroll = useMemo(
     () =>
-      Animated.event([{nativeEvent: {contentOffset: {y: scrollOffset}}}], {
-        useNativeDriver: true,
-      }),
+      Animated.event(
+        [
+          {
+            nativeEvent: {
+              contentOffset: {
+                y: scrollOffset,
+              },
+            },
+          },
+        ],
+        {
+          useNativeDriver: true,
+        },
+      ),
     [scrollOffset],
   );
-
   const contentContainerStyle = useMemo(() => {
     return [
       {
@@ -101,7 +106,6 @@ const List = <ItemT extends PickerItem<any>>(
       contentContainerStyleProp,
     ];
   }, [pickerHeight, itemHeight, contentContainerStyleProp]);
-
   return (
     <ExtendedAnimatedScrollView
       showsHorizontalScrollIndicator={false}
@@ -123,14 +127,19 @@ const List = <ItemT extends PickerItem<any>>(
       onScrollEnd={onScrollEnd}
     >
       {data.map((item, index) =>
-        renderItem({key: keyExtractor(item, index), item, index}),
+        renderItem({
+          key: keyExtractor(item, index),
+          item,
+          index,
+        }),
       )}
     </ExtendedAnimatedScrollView>
   );
 };
-
 const styles = StyleSheet.create({
-  list: {width: '100%', overflow: 'visible'},
+  list: {
+    width: '100%',
+    overflow: 'visible',
+  },
 });
-
 export default memo(forwardRef(List));

@@ -4,7 +4,6 @@ import {useScrollContentOffset} from '../contexts/ScrollContentOffsetContext';
 import {usePickerItemHeight} from '../contexts/PickerItemHeightContext';
 import type {RenderItem} from '../types';
 import type {Faces} from './faces';
-
 type PickerItemContainerProps = {
   item: any;
   index: number;
@@ -12,7 +11,6 @@ type PickerItemContainerProps = {
   renderItem: RenderItem<any>;
   itemTextStyle: StyleProp<TextStyle> | undefined;
 };
-
 const PickerItemContainer = ({
   index,
   item,
@@ -22,7 +20,6 @@ const PickerItemContainer = ({
 }: PickerItemContainerProps) => {
   const offset = useScrollContentOffset();
   const height = usePickerItemHeight();
-
   const {opacity, rotateX, translateY} = useMemo(() => {
     const inputRange = faces.map((f) => height * (index + f.index));
     return {
@@ -43,7 +40,6 @@ const PickerItemContainer = ({
       }),
     };
   }, [faces, height, index, offset]);
-
   return (
     <Animated.View
       style={[
@@ -51,16 +47,26 @@ const PickerItemContainer = ({
           height,
           opacity,
           transform: [
-            {translateY}, // first translateY, then rotateX for correct transformation.
-            {rotateX},
-            {perspective: 1000}, // without this line this Animation will not render on Android https://reactnative.dev/docs/animations#bear-in-mind
+            {
+              translateY,
+            },
+            // first translateY, then rotateX for correct transformation.
+            {
+              rotateX,
+            },
+            {
+              perspective: 1000,
+            }, // without this line this Animation will not render on Android https://reactnative.dev/docs/animations#bear-in-mind
           ],
         },
       ]}
     >
-      {renderItem({item, index, itemTextStyle})}
+      {renderItem({
+        item,
+        index,
+        itemTextStyle,
+      })}
     </Animated.View>
   );
 };
-
 export default memo(PickerItemContainer);

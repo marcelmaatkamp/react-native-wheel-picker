@@ -12,8 +12,7 @@ import type {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import debounce from '@utils/debounce';
-
+import debounce from '../debounce';
 type ComponentProps = Pick<
   ScrollViewProps,
   | 'onScrollBeginDrag'
@@ -21,11 +20,9 @@ type ComponentProps = Pick<
   | 'onMomentumScrollBegin'
   | 'onMomentumScrollEnd'
 >;
-
 type ExtendProps<PropsT> = PropsT & {
   onScrollEnd?: () => void;
 };
-
 const withScrollEndEvent = <PropsT extends ComponentProps>(
   Component: ComponentType<PropsT>,
 ) => {
@@ -40,10 +37,10 @@ const withScrollEndEvent = <PropsT extends ComponentProps>(
     forwardedRef: ForwardedRef<ComponentRef<ComponentType<PropsT>>>,
   ) => {
     const onScrollEnd = useMemo(
-      () => debounce(onScrollEndProp, 0), // This works well with onScrollEndDrag -> onMomentumScrollBegin transitions
+      () => debounce(onScrollEndProp, 0),
+      // This works well with onScrollEndDrag -> onMomentumScrollBegin transitions
       [onScrollEndProp],
     );
-
     const onScrollEndDrag = useCallback(
       (args: NativeSyntheticEvent<NativeScrollEvent>) => {
         onScrollEndDragProp?.(args);
@@ -51,7 +48,6 @@ const withScrollEndEvent = <PropsT extends ComponentProps>(
       },
       [onScrollEnd, onScrollEndDragProp],
     );
-
     const onMomentumScrollBegin = useCallback(
       (args: NativeSyntheticEvent<NativeScrollEvent>) => {
         onScrollEnd.clear();
@@ -59,7 +55,6 @@ const withScrollEndEvent = <PropsT extends ComponentProps>(
       },
       [onScrollEnd, onMomentumScrollBeginProp],
     );
-
     const onMomentumScrollEnd = useCallback(
       (args: NativeSyntheticEvent<NativeScrollEvent>) => {
         onMomentumScrollEndProp?.(args);
@@ -67,7 +62,6 @@ const withScrollEndEvent = <PropsT extends ComponentProps>(
       },
       [onScrollEnd, onMomentumScrollEndProp],
     );
-
     return (
       <Component
         {...(rest as any)}
@@ -78,16 +72,13 @@ const withScrollEndEvent = <PropsT extends ComponentProps>(
       />
     );
   };
-
   Wrapper.displayName = `withScrollEndEvent(${
     Component.displayName || 'Component'
   })`;
-
   return memo(
     forwardRef<ComponentRef<ComponentType<PropsT>>, ExtendProps<PropsT>>(
       Wrapper as any,
     ),
   );
 };
-
 export default withScrollEndEvent;

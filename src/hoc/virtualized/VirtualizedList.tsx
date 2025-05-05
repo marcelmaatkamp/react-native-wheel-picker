@@ -14,7 +14,7 @@ import {
   StyleSheet,
   type ViewStyle,
 } from 'react-native';
-import {withScrollEndEvent} from '@utils/scrolling';
+import {withScrollEndEvent} from '../../utils/scrolling';
 import type {
   KeyExtractor,
   ListMethods,
@@ -24,7 +24,6 @@ import type {
 
 // TODO "any" is not an exact type. How to pass the generic type?
 const ExtendedAnimatedFlatList = withScrollEndEvent(Animated.FlatList<any>);
-
 export type AdditionalProps = Pick<
   FlatListProps<any>,
   | 'initialNumToRender'
@@ -32,7 +31,6 @@ export type AdditionalProps = Pick<
   | 'windowSize'
   | 'updateCellsBatchingPeriod'
 >;
-
 type VirtualizedListProps<ItemT extends PickerItem<any>> = {
   data: ReadonlyArray<ItemT>;
   keyExtractor: KeyExtractor<ItemT>;
@@ -49,7 +47,6 @@ type VirtualizedListProps<ItemT extends PickerItem<any>> = {
   onScrollEnd: () => void;
   contentContainerStyle: StyleProp<ViewStyle> | undefined;
 } & AdditionalProps;
-
 const VirtualizedList = <ItemT extends PickerItem<any>>(
   {
     initialIndex,
@@ -66,12 +63,10 @@ const VirtualizedList = <ItemT extends PickerItem<any>>(
     onTouchCancel,
     onScrollEnd,
     contentContainerStyle: contentContainerStyleProp,
-
     initialNumToRender,
     maxToRenderPerBatch,
     updateCellsBatchingPeriod = 10,
     windowSize,
-
     ...restProps
   }: VirtualizedListProps<ItemT>,
   forwardedRef: ForwardedRef<ListMethods>,
@@ -82,9 +77,20 @@ const VirtualizedList = <ItemT extends PickerItem<any>>(
   );
   const onScroll = useMemo(
     () =>
-      Animated.event([{nativeEvent: {contentOffset: {y: scrollOffset}}}], {
-        useNativeDriver: true,
-      }),
+      Animated.event(
+        [
+          {
+            nativeEvent: {
+              contentOffset: {
+                y: scrollOffset,
+              },
+            },
+          },
+        ],
+        {
+          useNativeDriver: true,
+        },
+      ),
     [scrollOffset],
   );
   const getItemLayout = useCallback(
@@ -95,7 +101,6 @@ const VirtualizedList = <ItemT extends PickerItem<any>>(
     }),
     [itemHeight],
   );
-
   const contentContainerStyle = useMemo(() => {
     return [
       {
@@ -104,7 +109,6 @@ const VirtualizedList = <ItemT extends PickerItem<any>>(
       contentContainerStyleProp,
     ];
   }, [pickerHeight, itemHeight, contentContainerStyleProp]);
-
   return (
     <ExtendedAnimatedFlatList
       showsHorizontalScrollIndicator={false}
@@ -137,9 +141,10 @@ const VirtualizedList = <ItemT extends PickerItem<any>>(
     />
   );
 };
-
 const styles = StyleSheet.create({
-  list: {width: '100%', overflow: 'visible'},
+  list: {
+    width: '100%',
+    overflow: 'visible',
+  },
 });
-
 export default memo(forwardRef(VirtualizedList));

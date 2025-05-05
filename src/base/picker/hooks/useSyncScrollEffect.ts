@@ -1,6 +1,5 @@
 import {type RefObject, useEffect} from 'react';
 import type {ListMethods} from '../../types';
-
 const useSyncScrollEffect = ({
   listRef,
   valueIndex,
@@ -20,9 +19,10 @@ const useSyncScrollEffect = ({
     ) {
       return;
     }
-
-    listRef.current.scrollToIndex({index: valueIndex, animated: true});
+    listRef.current.scrollToIndex({
+      index: valueIndex,
+      animated: true,
+    });
   }, [valueIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 };
-
 export default useSyncScrollEffect;

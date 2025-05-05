@@ -21,10 +21,9 @@ import type {
 import Overlay from '../overlay/Overlay';
 import {calcPickerHeight, createFaces} from '../item/faces';
 import PickerItemContainer from '../item/PickerItemContainer';
-import {useBoolean} from '@utils/react';
+import {useBoolean} from '../../utils/react';
 import {useInit} from '@rozhkov/react-useful-hooks';
 import List from '../list/List';
-
 export type PickerProps<ItemT extends PickerItem<any>> = {
   data: ReadonlyArray<ItemT>;
   value?: ItemT['value'];
@@ -33,24 +32,19 @@ export type PickerProps<ItemT extends PickerItem<any>> = {
   width?: number | 'auto' | `${number}%`;
   readOnly?: boolean;
   testID?: string;
-
   onValueChanging?: OnValueChanging<ItemT>;
   onValueChanged?: OnValueChanged<ItemT>;
-
   keyExtractor?: KeyExtractor<ItemT>;
   renderItem?: RenderItem<ItemT>;
   renderItemContainer?: RenderItemContainer<ItemT>;
   renderOverlay?: RenderOverlay | null;
   renderList?: RenderList<ItemT>;
-
   style?: StyleProp<ViewStyle>;
   itemTextStyle?: StyleProp<TextStyle>;
   overlayItemStyle?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
-
   scrollEventThrottle?: number;
 };
-
 const defaultKeyExtractor: KeyExtractor<any> = (_, index) => index.toString();
 const defaultRenderItem: RenderItem<PickerItem<any>> = ({
   item: {value, label},
@@ -70,14 +64,12 @@ const defaultRenderOverlay: RenderOverlay = (props) => <Overlay {...props} />;
 const defaultRenderList: RenderList<any> = (props) => {
   return <List {...props} />;
 };
-
 const useValueIndex = (data: ReadonlyArray<PickerItem<any>>, value: any) => {
   return useMemo(() => {
     const index = data.findIndex((x) => x.value === value);
     return index >= 0 ? index : 0;
   }, [data, value]);
 };
-
 const Picker = <ItemT extends PickerItem<any>>({
   data,
   value,
@@ -86,16 +78,13 @@ const Picker = <ItemT extends PickerItem<any>>({
   visibleItemCount = 5,
   readOnly = false,
   testID,
-
   onValueChanged,
   onValueChanging,
-
   keyExtractor = defaultKeyExtractor,
   renderItem = defaultRenderItem,
   renderItemContainer = defaultRenderItemContainer,
   renderOverlay = defaultRenderOverlay,
   renderList = defaultRenderList,
-
   style,
   itemTextStyle,
   overlayItemStyle,
@@ -107,7 +96,6 @@ const Picker = <ItemT extends PickerItem<any>>({
   const offsetY = useRef(new Animated.Value(valueIndex * itemHeight)).current;
   const listRef = useRef<ListMethods>(null);
   const touching = useBoolean(false);
-
   const [faces, pickerHeight] = useMemo(() => {
     const items = createFaces(itemHeight, visibleItemCount);
     const height = calcPickerHeight(items, itemHeight);
@@ -115,10 +103,16 @@ const Picker = <ItemT extends PickerItem<any>>({
   }, [itemHeight, visibleItemCount]);
   const renderPickerItem = useCallback<RenderPickerItem<ItemT>>(
     ({item, index, key}) =>
-      renderItemContainer({key, item, index, faces, renderItem, itemTextStyle}),
+      renderItemContainer({
+        key,
+        item,
+        index,
+        faces,
+        renderItem,
+        itemTextStyle,
+      }),
     [faces, itemTextStyle, renderItem, renderItemContainer],
   );
-
   const {activeIndexRef, onScrollEnd} = useValueEventsEffect(
     {
       data,
@@ -126,7 +120,10 @@ const Picker = <ItemT extends PickerItem<any>>({
       itemHeight,
       offsetYAv: offsetY,
     },
-    {onValueChanging, onValueChanged},
+    {
+      onValueChanging,
+      onValueChanged,
+    },
   );
   useSyncScrollEffect({
     listRef,
@@ -134,13 +131,19 @@ const Picker = <ItemT extends PickerItem<any>>({
     activeIndexRef,
     touching: touching.value,
   });
-
   return (
     <ScrollContentOffsetContext.Provider value={offsetY}>
       <PickerItemHeightContext.Provider value={itemHeight}>
         <View
           testID={testID}
-          style={[styles.root, style, {height: pickerHeight, width}]}
+          style={[
+            styles.root,
+            style,
+            {
+              height: pickerHeight,
+              width,
+            },
+          ]}
         >
           {renderList({
             ...restProps,
@@ -172,9 +175,10 @@ const Picker = <ItemT extends PickerItem<any>>({
     </ScrollContentOffsetContext.Provider>
   );
 };
-
 const styles = StyleSheet.create({
-  root: {justifyContent: 'center', alignItems: 'center'},
+  root: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
-
 export default Picker;
